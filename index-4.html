@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Blooma — Skincare & Beauty</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blush:#f8d9e3;
+    --blush-soft:#fdf1f4;
+    --rose:#c9587a;
+    --rose-deep:#a43c5c;
+    --cream:#fffbf8;
+    --ink:#3a2b30;
+    --ink-soft:#8a7278;
+    --line:#f0dbe1;
+    --shadow: 0 20px 50px -25px rgba(169,60,92,0.35);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Manrope',sans-serif;
+    background:
+      radial-gradient(circle at 12% -8%, #fbdce6 0%, transparent 42%),
+      radial-gradient(circle at 108% 6%, #fce8ee 0%, transparent 38%),
+      radial-gradient(circle at 50% 115%, #fbe0e9 0%, transparent 45%),
+      var(--cream);
+    color:var(--ink);
+    min-height:100%;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif;}
+  a{color:inherit;}
+
+  /* ---------- decorative background ---------- */
+  .petals{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;}
+  .petals span{
+    position:absolute; border-radius:50% 0 50% 50%;
+    background:var(--blush); opacity:.55;
+  }
+
+  /* ---------- screen switching ---------- */
+  .screen{
+    position:relative; z-index:1;
+    min-height:100vh; min-height:100dvh;
+    display:none;
+  }
+  .screen.active{display:block;}
+
+  /* ---------- auth screens ---------- */
+  .auth-wrap{
+    min-height:100vh; min-height:100dvh;
+    display:flex; align-items:center; justify-content:center;
+    padding:32px 20px;
+  }
+  .auth-card{
+    width:100%; max-width:380px;
+    background:var(--cream);
+    border:1px solid var(--line);
+    border-radius:28px;
+    padding:40px 32px 34px;
+    box-shadow:var(--shadow);
+    position:relative;
+  }
+  .brandmark{
+    display:flex; align-items:center; gap:10px; justify-content:center;
+    margin-bottom:22px;
+  }
+  .brandmark .dot{width:9px;height:9px;border-radius:50%;background:var(--rose);}
+  .brandmark span{font-family:'Cormorant Garamond',serif; font-size:1.5rem; letter-spacing:.03em; color:var(--rose-deep);}
+  .auth-card h1{font-size:2rem; font-weight:500; text-align:center; margin-bottom:6px;}
+  .auth-sub{text-align:center; color:var(--ink-soft); font-size:.92rem; margin-bottom:28px; line-height:1.5;}
+
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-size:.78rem; color:var(--ink-soft); margin-bottom:6px; font-weight:600;}
+  .field input{
+    width:100%; padding:13px 15px; border-radius:12px;
+    border:1.5px solid var(--line); background:var(--blush-soft);
+    font-family:'Manrope',sans-serif; font-size:.95rem; color:var(--ink);
+    outline:none; transition:border-color .15s ease, background .15s ease;
+  }
+  .field input:focus{border-color:var(--rose); background:var(--cream);}
+
+  .btn-primary{
+    width:100%; padding:14px; border:none; border-radius:12px;
+    background:var(--rose); color:#fff; font-family:'Manrope',sans-serif;
+    font-size:.95rem; font-weight:700; letter-spacing:.01em;
+    cursor:pointer; margin-top:6px; transition:background .15s ease, transform .1s ease;
+  }
+  .btn-primary:hover{background:var(--rose-deep);}
+  .btn-primary:active{transform:scale(.98);}
+
+  .switch-line{text-align:center; margin-top:22px; font-size:.88rem; color:var(--ink-soft);}
+  .switch-line button{
+    background:none; border:none; color:var(--rose-deep); font-weight:700;
+    cursor:pointer; font-size:.88rem; font-family:'Manrope',sans-serif; padding:0;
+  }
+  .form-note{font-size:.76rem; color:var(--ink-soft); text-align:center; margin-top:14px; line-height:1.5;}
+  .form-note strong{color:var(--rose-deep);}
+
+  /* ---------- app shell (home / about) ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:5;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 24px; padding-top:calc(16px + env(safe-area-inset-top,0px));
+    background:rgba(255,251,248,.9); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .brandmark{margin-bottom:0;}
+  nav.tabs{display:flex; gap:4px; background:var(--blush-soft); padding:4px; border-radius:999px; border:1px solid var(--line);}
+  nav.tabs button{
+    border:none; background:none; padding:8px 16px; border-radius:999px;
+    font-family:'Manrope',sans-serif; font-size:.82rem; font-weight:600; color:var(--ink-soft);
+    cursor:pointer; transition:background .15s ease, color .15s ease;
+  }
+  nav.tabs button.on{background:var(--rose); color:#fff;}
+  .logout-btn{
+    border:1.5px solid var(--line); background:var(--cream); color:var(--ink-soft);
+    padding:8px 16px; border-radius:999px; font-family:'Manrope',sans-serif;
+    font-size:.8rem; font-weight:600; cursor:pointer; transition:border-color .15s ease, color .15s ease;
+  }
+  .logout-btn:hover{border-color:var(--rose); color:var(--rose-deep);}
+
+  .page{max-width:760px; margin:0 auto; padding:56px 24px 80px;}
+
+  /* home */
+  .eyebrow{color:var(--rose-deep); font-size:.8rem; font-weight:700; margin-bottom:14px;}
+  .hero h1{font-size:clamp(2.4rem,6vw,3.4rem); line-height:1.08; font-weight:500; margin-bottom:18px;}
+  .hero h1 em{font-style:italic; color:var(--rose-deep);}
+  .hero p{max-width:46ch; color:var(--ink-soft); font-size:1.02rem; line-height:1.65; margin-bottom:26px;}
+  .hero-cta{display:flex; gap:12px; flex-wrap:wrap;}
+  .pill-btn{
+    padding:13px 24px; border-radius:999px; font-family:'Manrope',sans-serif; font-weight:700;
+    font-size:.88rem; cursor:pointer; border:1.5px solid transparent;
+  }
+  .pill-btn.fill{background:var(--rose); color:#fff;}
+  .pill-btn.fill:hover{background:var(--rose-deep);}
+  .pill-btn.ghost{background:transparent; border-color:var(--line); color:var(--ink);}
+  .pill-btn.ghost:hover{border-color:var(--rose);}
+
+  .hero-visual{
+    position:relative;
+    width:min(320px,70vw); aspect-ratio:1; border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #fff, var(--blush) 72%);
+    border:1px solid var(--line); margin:44px auto 0;
+    display:flex; align-items:flex-end; justify-content:center; gap:6px;
+    padding-bottom:26px; overflow:visible;
+  }
+  .hero-visual .flower{position:absolute;}
+  .hero-visual .flower.f1{top:8%; left:10%; width:26px;}
+  .hero-visual .flower.f2{top:14%; right:8%; width:18px; opacity:.8;}
+  .hero-visual .flower.f3{bottom:10%; left:2%; width:16px; opacity:.7;}
+  .hero-visual .bottle{filter:drop-shadow(0 10px 14px rgba(169,60,92,0.18));}
+  .hero-visual .bottle.mid{transform:translateY(-10px) scale(1.1);}
+  .hero-caption{
+    text-align:center; margin-top:16px; font-family:'Cormorant Garamond',serif;
+    font-style:italic; font-size:1.15rem; color:var(--rose-deep);
+  }
+
+  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:54px;}
+  .grid3 .card{
+    border:1px solid var(--line); border-radius:18px; padding:22px 18px;
+    background:var(--blush-soft);
+  }
+  .grid3 .card .num{display:block; margin-bottom:10px;}
+  .grid3 .card h3{font-size:.98rem; font-weight:700; margin-bottom:6px;}
+  .grid3 .card p{font-size:.84rem; color:var(--ink-soft); line-height:1.5;}
+
+  @media (max-width:600px){
+    .grid3{grid-template-columns:1fr;}
+    nav.tabs{display:none;}
+  }
+
+  /* about */
+  .about-hero{margin-bottom:44px;}
+  .about-hero h1{font-size:clamp(2rem,5vw,2.8rem); font-weight:500; margin-bottom:16px;}
+  .about-hero p{color:var(--ink-soft); line-height:1.7; max-width:58ch;}
+  .value-list{display:flex; flex-direction:column; gap:0; border-top:1px solid var(--line);}
+  .value-item{
+    display:flex; gap:20px; padding:22px 0; border-bottom:1px solid var(--line);
+  }
+  .value-item .serif{font-size:1.6rem; font-style:italic; color:var(--rose); min-width:52px;}
+  .value-item h3{font-size:1.02rem; font-weight:700; margin-bottom:6px;}
+  .value-item p{color:var(--ink-soft); font-size:.9rem; line-height:1.6; max-width:52ch;}
+
+  .sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);}
+  button:focus-visible, input:focus-visible{outline:2px solid var(--rose-deep); outline-offset:2px;}
+
+  @media (prefers-reduced-motion:no-preference){
+    .auth-card{animation:rise .5s ease both;}
+    @keyframes rise{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+  }
+</style>
+</head>
+<body>
+
+<div class="petals" id="petals"></div>
+
+<!-- LOGIN -->
+<section class="screen active" id="screen-login">
+  <div class="auth-wrap">
+    <form class="auth-card" id="form-login" novalidate>
+      <svg width="28" height="28" viewBox="0 0 40 40" style="display:block;margin:0 auto 8px;"><g fill="var(--rose)" opacity="0.85"><ellipse cx="20" cy="8" rx="6" ry="9"/><ellipse cx="20" cy="32" rx="6" ry="9"/><ellipse cx="8" cy="20" rx="9" ry="6"/><ellipse cx="32" cy="20" rx="9" ry="6"/></g><circle cx="20" cy="20" r="5" fill="var(--rose-deep)"/></svg>
+      <div class="brandmark"><span class="dot"></span><span>Blooma</span></div>
+      <h1>Selamat datang kembali</h1>
+      <p class="auth-sub">Masuk untuk melanjutkan rutinitas kecantikanmu.</p>
+      <div class="field">
+        <label for="login-email">Email</label>
+        <input id="login-email" type="email" placeholder="nama@email.com" required>
+      </div>
+      <div class="field">
+        <label for="login-pass">Kata sandi</label>
+        <input id="login-pass" type="password" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn-primary">Masuk</button>
+      <p class="switch-line">Belum punya akun? <button type="button" id="go-signup">Daftar di sini</button></p>
+      <p class="form-note">Demo tugas UI/UX — isi email &amp; kata sandi apa saja, tidak ada data yang dikirim atau disimpan.</p>
+    </form>
+  </div>
+</section>
+
+<!-- SIGN UP -->
+<section class="screen" id="screen-signup">
+  <div class="auth-wrap">
+    <form class="auth-card" id="form-signup" novalidate>
+      <svg width="28" height="28" viewBox="0 0 40 40" style="display:block;margin:0 auto 8px;"><g fill="var(--rose)" opacity="0.85"><ellipse cx="20" cy="8" rx="6" ry="9"/><ellipse cx="20" cy="32" rx="6" ry="9"/><ellipse cx="8" cy="20" rx="9" ry="6"/><ellipse cx="32" cy="20" rx="9" ry="6"/></g><circle cx="20" cy="20" r="5" fill="var(--rose-deep)"/></svg>
+      <div class="brandmark"><span class="dot"></span><span>Blooma</span></div>
+      <h1>Buat akun baru</h1>
+      <p class="auth-sub">Satu langkah menuju rutinitas kulit yang lebih cerah.</p>
+      <div class="field">
+        <label for="signup-name">Nama lengkap</label>
+        <input id="signup-name" type="text" placeholder="Nama kamu" required>
+      </div>
+      <div class="field">
+        <label for="signup-email">Email</label>
+        <input id="signup-email" type="email" placeholder="nama@email.com" required>
+      </div>
+      <div class="field">
+        <label for="signup-pass">Kata sandi</label>
+        <input id="signup-pass" type="password" placeholder="Buat kata sandi" required>
+      </div>
+      <button type="submit" class="btn-primary">Daftar</button>
+      <p class="switch-line">Sudah punya akun? <button type="button" id="go-login">Masuk</button></p>
+    </form>
+  </div>
+</section>
+
+<!-- HOME -->
+<section class="screen" id="screen-home">
+  <header class="topbar">
+    <div class="brandmark"><span class="dot"></span><span>Blooma</span></div>
+    <nav class="tabs">
+      <button class="on" data-tab="home">Beranda</button>
+      <button data-tab="about">Tentang</button>
+    </nav>
+    <button class="logout-btn" id="logout-btn">Keluar</button>
+  </header>
+  <div class="page">
+    <p class="eyebrow" id="greet-name">Halo!</p>
+    <div class="hero">
+      <h1>Rawat kulitmu <em>dengan lembut</em>, setiap hari.</h1>
+      <p>Blooma menghadirkan rangkaian perawatan kulit ringan berbahan alami, dirancang untuk rutinitas pagi dan malam yang menenangkan.</p>
+      <div class="hero-cta">
+        <button class="pill-btn fill" type="button">Jelajahi produk</button>
+        <button class="pill-btn ghost" type="button" data-tab="about">Kenali Blooma</button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <svg class="flower f1" viewBox="0 0 40 40"><g fill="var(--rose)" opacity="0.85"><ellipse cx="20" cy="8" rx="6" ry="9"/><ellipse cx="20" cy="32" rx="6" ry="9"/><ellipse cx="8" cy="20" rx="9" ry="6"/><ellipse cx="32" cy="20" rx="9" ry="6"/></g><circle cx="20" cy="20" r="5" fill="var(--rose-deep)"/></svg>
+      <svg class="flower f2" viewBox="0 0 40 40"><g fill="var(--rose)" opacity="0.7"><ellipse cx="20" cy="8" rx="6" ry="9"/><ellipse cx="20" cy="32" rx="6" ry="9"/><ellipse cx="8" cy="20" rx="9" ry="6"/><ellipse cx="32" cy="20" rx="9" ry="6"/></g><circle cx="20" cy="20" r="5" fill="var(--rose-deep)"/></svg>
+      <svg class="flower f3" viewBox="0 0 40 40"><g fill="var(--rose)" opacity="0.6"><ellipse cx="20" cy="8" rx="6" ry="9"/><ellipse cx="20" cy="32" rx="6" ry="9"/><ellipse cx="8" cy="20" rx="9" ry="6"/><ellipse cx="32" cy="20" rx="9" ry="6"/></g><circle cx="20" cy="20" r="5" fill="var(--rose-deep)"/></svg>
+      <svg class="bottle" width="46" height="66" viewBox="0 0 60 80"><rect x="14" y="18" width="20" height="4" rx="2" fill="var(--rose)"/><path d="M16 22 h16 a4 4 0 0 1 4 4 v40 a6 6 0 0 1 -6 6 h-12 a6 6 0 0 1 -6 -6 v-40 a4 4 0 0 1 4 -4 z" fill="#fff" stroke="var(--rose)" stroke-width="2"/><rect x="21" y="34" width="10" height="3" fill="var(--blush)"/></svg>
+      <svg class="bottle mid" width="50" height="72" viewBox="0 0 60 80"><rect x="22" y="6" width="6" height="14" fill="var(--rose-deep)"/><path d="M18 20 h14 a3 3 0 0 1 3 3 v6 a3 3 0 0 1 -3 3 h-14 a3 3 0 0 1 -3 -3 v-6 a3 3 0 0 1 3 -3z" fill="var(--rose)"/><path d="M17 32 h16 v34 a8 8 0 0 1 -8 8 a8 8 0 0 1 -8 -8 z" fill="#fff" stroke="var(--rose)" stroke-width="2"/></svg>
+      <svg class="bottle" width="46" height="60" viewBox="0 0 60 80"><ellipse cx="25" cy="18" rx="16" ry="6" fill="var(--rose)"/><path d="M9 22 h32 v30 a16 16 0 0 1 -32 0 z" fill="#fff" stroke="var(--rose)" stroke-width="2"/></svg>
+    </div>
+    <p class="hero-caption">welcome to Blooma</p>
+
+    <div class="grid3">
+      <div class="card"><svg class="num" width="30" height="40" viewBox="0 0 60 80"><rect x="14" y="18" width="20" height="4" rx="2" fill="var(--rose)"/><path d="M16 22 h16 a4 4 0 0 1 4 4 v40 a6 6 0 0 1 -6 6 h-12 a6 6 0 0 1 -6 -6 v-40 a4 4 0 0 1 4 -4 z" fill="var(--blush)" stroke="var(--rose)" stroke-width="2"/></svg><h3>Cleanser lembut</h3><p>Membersihkan tanpa membuat kulit terasa kering atau tertarik.</p></div>
+      <div class="card"><svg class="num" width="30" height="40" viewBox="0 0 60 80"><rect x="22" y="6" width="6" height="14" fill="var(--rose-deep)"/><path d="M18 20 h14 a3 3 0 0 1 3 3 v6 a3 3 0 0 1 -3 3 h-14 a3 3 0 0 1 -3 -3 v-6 a3 3 0 0 1 3 -3z" fill="var(--rose)"/><path d="M17 32 h16 v34 a8 8 0 0 1 -8 8 a8 8 0 0 1 -8 -8 z" fill="var(--blush)" stroke="var(--rose)" stroke-width="2"/></svg><h3>Serum merona</h3><p>Formula ringan dengan ekstrak mawar untuk kulit tampak segar.</p></div>
+      <div class="card"><svg class="num" width="30" height="40" viewBox="0 0 60 80"><ellipse cx="25" cy="18" rx="16" ry="6" fill="var(--rose)"/><path d="M9 22 h32 v30 a16 16 0 0 1 -32 0 z" fill="var(--blush)" stroke="var(--rose)" stroke-width="2"/></svg><h3>Pelembap harian</h3><p>Melindungi kelembapan kulit sepanjang hari, ringan di wajah.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="screen" id="screen-about">
+  <header class="topbar">
+    <div class="brandmark"><span class="dot"></span><span>Blooma</span></div>
+    <nav class="tabs">
+      <button data-tab="home">Beranda</button>
+      <button class="on" data-tab="about">Tentang</button>
+    </nav>
+    <button class="logout-btn" id="logout-btn-2">Keluar</button>
+  </header>
+  <div class="page">
+    <div class="about-hero">
+      <svg width="40" height="52" viewBox="0 0 60 80" style="margin-bottom:16px;"><ellipse cx="25" cy="18" rx="16" ry="6" fill="var(--rose)"/><path d="M9 22 h32 v30 a16 16 0 0 1 -32 0 z" fill="var(--blush)" stroke="var(--rose)" stroke-width="2"/></svg>
+      <h1>Kecantikan yang tenang, bukan yang riuh.</h1>
+      <p>Blooma lahir dari keyakinan sederhana: kulit paling sehat adalah kulit yang dirawat dengan perlahan. Kami meracik setiap produk dengan bahan yang mudah dikenali, tanpa proses yang rumit.</p>
+    </div>
+    <div class="value-list">
+      <div class="value-item"><span class="serif">i</span><div><h3>Bahan yang jujur</h3><p>Setiap formula dijelaskan apa adanya, tanpa istilah yang membingungkan.</p></div></div>
+      <div class="value-item"><span class="serif">ii</span><div><h3>Dibuat perlahan</h3><p>Kami memilih kualitas dibanding kecepatan produksi, agar setiap produk terasa layak ditunggu.</p></div></div>
+      <div class="value-item"><span class="serif">iii</span><div><h3>Untuk semua jenis kulit</h3><p>Rangkaian yang ringan dan fleksibel, dirancang untuk rutinitas yang berbeda-beda.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var screens = ['login','signup','home','about'];
+  function show(name){
+    screens.forEach(function(s){
+      document.getElementById('screen-'+s).classList.toggle('active', s===name);
+    });
+    window.scrollTo(0,0);
+  }
+  function setTab(tab){
+    show(tab);
+    document.querySelectorAll('nav.tabs button').forEach(function(b){
+      b.classList.toggle('on', b.dataset.tab===tab);
+    });
+  }
+
+  document.getElementById('go-signup').addEventListener('click', function(){ show('signup'); });
+  document.getElementById('go-login').addEventListener('click', function(){ show('login'); });
+
+  document.getElementById('form-login').addEventListener('submit', function(e){
+    e.preventDefault();
+    var email = document.getElementById('login-email').value.trim();
+    var name = email ? email.split('@')[0] : 'kamu';
+    document.getElementById('greet-name').textContent = 'Halo, ' + name + '!';
+    setTab('home');
+  });
+
+  document.getElementById('form-signup').addEventListener('submit', function(e){
+    e.preventDefault();
+    var name = document.getElementById('signup-name').value.trim() || 'kamu';
+    document.getElementById('greet-name').textContent = 'Halo, ' + name + '!';
+    setTab('home');
+  });
+
+  document.querySelectorAll('nav.tabs button').forEach(function(b){
+    b.addEventListener('click', function(){ setTab(b.dataset.tab); });
+  });
+  document.querySelectorAll('.hero-cta [data-tab]').forEach(function(b){
+    b.addEventListener('click', function(){ setTab(b.dataset.tab); });
+  });
+
+  function doLogout(){
+    document.getElementById('form-login').reset();
+    document.getElementById('form-signup').reset();
+    show('login');
+  }
+  document.getElementById('logout-btn').addEventListener('click', doLogout);
+  document.getElementById('logout-btn-2').addEventListener('click', doLogout);
+
+  // decorative petals
+  var wrap = document.getElementById('petals');
+  var n = 10;
+  for(var i=0;i<n;i++){
+    var el = document.createElement('span');
+    var size = 30 + Math.random()*70;
+    el.style.width = size+'px';
+    el.style.height = size+'px';
+    el.style.left = (Math.random()*100)+'%';
+    el.style.top = (Math.random()*100)+'%';
+    el.style.transform = 'rotate('+Math.floor(Math.random()*360)+'deg)';
+    wrap.appendChild(el);
+  }
+})();
+</script>
+</body>
+</html>
